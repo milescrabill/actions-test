@@ -1,4 +1,4 @@
-name: merge
+name: merge changes into downstream branches
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
       - 'develop'
 
 jobs:
-  build:
+  merge:
 
     runs-on: ubuntu-latest
     
