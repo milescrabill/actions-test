@@ -11,19 +11,27 @@ jobs:
     - uses: actions/checkout@v1
     - name: download deps
       run: |
-        apt-get update && \
+        # exit on errors
+        set -e
+        set -o pipefail
+
+        sudo apt-get update && \
           apt-get install -y curl git
 
         # download hub release, extract binary to /usr/local/bin
         HUB_VERSION=2.12.7
         curl -s -L -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v$HUB_VERSION/hub-linux-amd64-$HUB_VERSION.tgz
         tar zxvf /tmp/hub.tgz -C /tmp
-        mv /tmp/hub-linux-amd64-$HUB_VERSION/bin/hub /usr/local/bin
+        sudo mv /tmp/hub-linux-amd64-$HUB_VERSION/bin/hub /usr/local/bin
 
     - name: create and merge PRs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # exit on errors
+        set -e
+        set -o pipefail
+
         # this is automatically provided
         # see: https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret
         if [[ -z "${GITHUB_TOKEN}" ]]; then
