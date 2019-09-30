@@ -12,7 +12,7 @@ jobs:
     - name: download deps
       run: |
         # exit on errors
-        set -e
+        set -exv
         set -o pipefail
 
         sudo apt-get update
@@ -29,6 +29,10 @@ jobs:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       run: |
+        # exit on errors
+        set -exv
+        set -o pipefail
+
         # use ssh urls
         git config --global url."git@github.com:".insteadOf "https://github.com/"
 
@@ -53,7 +57,7 @@ jobs:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
         # exit on errors
-        set -e
+        set -exv
         set -o pipefail
 
         # this is automatically provided
@@ -83,7 +87,6 @@ jobs:
               git reset --hard origin/"${1}"
             hub merge ${PR_URL}
             git push origin ${1} && echo "DEBUG: successfully pushed" || echo "DEBUG: push failed"
-            echo $?
           fi
         }
 
