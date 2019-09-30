@@ -29,6 +29,14 @@ jobs:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       run: |
+        # use ssh urls
+        git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+        # git config for merge commits
+        git config --global user.email "automerge@example.com"
+        git config --global user.name "automerge"
+        git config --global push.default matching
+
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
 
@@ -54,11 +62,6 @@ jobs:
           echo "You must include the GITHUB_TOKEN as an environment variable."
           exit 1
         fi
-
-        # git config for merge commits
-        git config --global user.email "foo@bar.com"
-        git config --global user.name "foo bar"
-        git config --global push.default matching
 
         # get branches for all remotes
         git fetch --all

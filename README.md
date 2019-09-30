@@ -8,3 +8,14 @@
 
 - We hardcode Github's SSH pubkeys into our known_hosts for security reasons
     - these are gotten via: `ssh-keyscan github.com`
+
+#### Create pull requests as follows:
+
+- If we’re on master:
+    - Open PRs with changes from head branch master onto base branches matching:
+        - 'release/.*'
+        - 'hotfix/.*'
+- If we’re on develop:
+    - Open PRs with changes from head branch develop onto base branches matching 'sprint/.*'
+- If we’re on a branch matching release\/.*:
+    - Open PRs from each release branch to develop
