@@ -24,9 +24,25 @@ jobs:
         tar zxvf /tmp/hub.tgz -C /tmp
         sudo mv /tmp/hub-linux-amd64-$HUB_VERSION/bin/hub /usr/local/bin
 
+    - name: configure git and ssh keys
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+
+        # add github's pubkey to known_hosts
+        echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+
+        # add SSH deploy key via stdin
+        # output will filter this
+        echo "$DEPLOY_KEY" | ssh-add -
+
     - name: create and merge PRs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
         # exit on errors
         set -e
@@ -52,7 +68,7 @@ jobs:
 
         function open_and_merge_pull_request() {
           echo "making pull request from ${GITHUB_REF} to $1"
-          # create PR, record PR url
+          # create PR, record PR url in $PR_URL
           PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
           if [ -z "$PR_URL"  ]; then
             echo 'Failed to get PR URL'
@@ -69,9 +85,28 @@ jobs:
 
         # if we're on master
         if [ "${GITHUB_REF}" == "refs/heads/master" ]; then
+          # create PR from master => develop
+          open_and_merge_pull_request develop;
+          # create PRs from master => release branches
+          git branch -r | grep -o 'release/.*' | while read -r branch ; do
+            open_and_merge_pull_request "${branch}";
+          done
+          # create PRs from master => hotfix branches
           git branch -r | grep -o 'hotfix/.*' | while read -r branch ; do
             open_and_merge_pull_request "${branch}";
           done
         fi
 
+        # if we're on develop
+        if [ "${GITHUB_REF}" == "refs/heads/develop" ]; then
+          # create PR from develop => sprint branches
+          git branch -r | grep -o 'sprint/.*' |  while read -r branch ; do
+            open_and_merge_pull_request "${branch}";
+          done
+        fi
 
+        # if we're on a release branch
+        if [[ "${GITHUB_REF}" =~ refs/heads/release\/.* ]]; then
+          # create PR from release => develop
+          open_and_merge_pull_request develop;
+        fi
