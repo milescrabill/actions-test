@@ -86,7 +86,9 @@ jobs:
               git checkout "${1}" && \
               git reset --hard origin/"${1}"
             hub merge ${PR_URL}
-            git push origin ${1} && echo "DEBUG: successfully pushed" || echo "DEBUG: push failed"
+            git push origin ${1} && \
+              echo "DEBUG: successfully pushed ${GITHUB_REF} merged into $1" || \
+              echo "DEBUG: pushing ${GITHUB_REF} merged into $1 failed"
           fi
         }
 

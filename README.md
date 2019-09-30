@@ -9,7 +9,7 @@
 - We hardcode Github's SSH pubkeys into our known_hosts for security reasons
     - these are gotten via: `ssh-keyscan github.com`
 
-#### Create pull requests as follows:
+#### Creates pull requests as follows:
 
 - If we’re on master:
     - Open PRs with changes from head branch master onto base branches matching:
