@@ -15,9 +15,6 @@ jobs:
         set -exv
         set -o pipefail
 
-        sudo apt-get update
-        sudo apt-get install -y curl git
-
         # download hub release, extract binary to /usr/local/bin
         HUB_VERSION=2.12.7
         curl -s -L -o /tmp/hub.tgz https://github.com/github/hub/releases/download/v$HUB_VERSION/hub-linux-amd64-$HUB_VERSION.tgz
