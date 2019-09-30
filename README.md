@@ -15,7 +15,7 @@
     - Open PRs with changes from head branch master onto base branches matching:
         - 'release/.*'
         - 'hotfix/.*'
-- If we’re on develop:
-    - Open PRs with changes from head branch develop onto base branches matching 'sprint/.*'
 - If we’re on a branch matching release\/.*:
     - Open PRs from each release branch to develop
+- If we’re on develop:
+    - Open PRs with changes from head branch develop onto base branches matching 'sprint/.*'
