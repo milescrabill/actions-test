@@ -53,8 +53,8 @@ jobs:
         function open_and_merge_pull_request() {
           echo "making pull request from ${GITHUB_REF} to $1"
           # create PR, record PR url
-          hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge' 1>/tmp/${1}_pr_url  || echo 'creating PR failed'
-          if [ "$?" == 0]; then
+          hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge' 1 > /tmp/pr_url  || echo 'creating PR failed'
+          if [ "$?" == 0] && [ -e /tmp/pr_url ]; then
             # checkout destination branch,
             # merge PR and push merge commit
             git fetch origin "${1}" && \
