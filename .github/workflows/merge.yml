@@ -86,7 +86,8 @@ jobs:
           # create PR, record PR url in $PR_URL
           PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
           if [ -z "$PR_URL"  ]; then
-            echo 'Failed to get PR URL'
+            echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
+            exit 1
           else
             # checkout destination branch,
             # merge PR and push merge commit
