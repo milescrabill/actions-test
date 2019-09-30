@@ -54,7 +54,7 @@ jobs:
           echo "making pull request from ${GITHUB_REF} to $1"
           # create PR, record PR url
           PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
-          if [ -z "$PR_URL"  ] then
+          if [ -z "$PR_URL"  ]; then
             echo 'Failed to get PR URL'
           else
             # checkout destination branch,
