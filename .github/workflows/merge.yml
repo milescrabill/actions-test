@@ -78,7 +78,7 @@ jobs:
           echo "DEBUG: making pull request from ${GITHUB_REF} to $1"
 
           # if $1 branch does not exist origin
-          if [ -z $(git for-each-ref --format='%(upstream:short)' "$1") ]; then
+          if [ -z $(git ls-remote origin "$1") ]; then
             echo "Could not find expected branch '$1' on remote 'origin'"
             exit 1
           fi
