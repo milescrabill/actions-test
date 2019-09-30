@@ -54,13 +54,13 @@ jobs:
           echo "making pull request from ${GITHUB_REF} to $1"
           # create PR, record PR url
           hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge' 1 > /tmp/pr_url  || echo 'creating PR failed'
-          if [ "$?" == 0 ] && [ -e /tmp/pr_url ]; then
+          if [ "$?" == 0  ] && [ -e /tmp/pr_url ]; then
             # checkout destination branch,
             # merge PR and push merge commit
             git fetch origin "${1}" && \
               git checkout "${1}" && \
               git reset --hard origin/"${1}"
-            hub merge <(/tmp/${1}_pr_url)
+            hub merge <(cat /tmp/pr_url)
             git push origin ${1}
           fi
         }
