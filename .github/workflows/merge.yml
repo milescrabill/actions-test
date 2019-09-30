@@ -95,11 +95,11 @@ jobs:
           # create PR from master => develop
           open_and_merge_pull_request develop;
           # create PRs from master => release branches
-          git branch -r | grep -o 'release/.*' | while read -r branch ; do
+          for branch in $(git branch -r | grep -o 'release/.*'); do
             open_and_merge_pull_request "${branch}";
           done
           # create PRs from master => hotfix branches
-          git branch -r | grep -o 'hotfix/.*' | while read -r branch ; do
+          for branch in $(git branch -r | grep -o 'hotfix/.*'); do
             open_and_merge_pull_request "${branch}";
           done
         fi
@@ -107,7 +107,7 @@ jobs:
         # if we're on develop
         if [ "${GITHUB_REF}" == "refs/heads/develop" ]; then
           # create PR from develop => sprint branches
-          git branch -r | grep -o 'sprint/.*' |  while read -r branch ; do
+          for branch in $(git branch -r | grep -o 'sprint/.*'); do
             open_and_merge_pull_request "${branch}";
           done
         fi
