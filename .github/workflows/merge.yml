@@ -29,6 +29,11 @@ jobs:
 
     - name: create and merge PRs
       run: |
+        # git config for merge commits
+        git config --global user.email "foo@bar.com"
+        git config --global user.name "foo bar"
+        git config --global push.default matching
+
         # get branches for all remotes
         git fetch --all
 
@@ -37,8 +42,17 @@ jobs:
 
         function open_and_merge_pull_request() {
           echo "making pull request from ${GITHUB_REF} to $1"
-          # create and merge
-          hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge' | hub merge -
+          # create PR, record PR url
+          hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge' 1>/tmp/${1}_pr_url  || echo 'creating PR failed'
+          if [[ "$?" == 0]]; then
+            # checkout destination branch,
+            # merge PR and push merge commit
+            git fetch origin "${1}" && \
+              git checkout "${1}" && \
+              git reset --hard origin/"${1}"
+            hub merge <(/tmp/${1}_pr_url)
+            git push origin ${1}
+          fi
         }
 
         # if we're on master
@@ -47,3 +61,5 @@ jobs:
             open_and_merge_pull_request "${branch}";
           done
         fi
+
+
