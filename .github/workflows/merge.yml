@@ -9,13 +9,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: check for token
-      run: |
-        # we can't use GITHUB_ prefix
-        if [[ -z "${TOKEN}" ]]; then
-          echo "You must include the TOKEN as an environment variable."
-          exit 1
-        fi
     - name: download deps
       run: |
         apt-get update && \
@@ -28,7 +21,16 @@ jobs:
         mv /tmp/hub-linux-amd64-$HUB_VERSION/bin/hub /usr/local/bin
 
     - name: create and merge PRs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # this is automatically provided
+        # see: https://help.github.com/en/articles/virtual-environments-for-github-actions#github_token-secret
+        if [[ -z "${GITHUB_TOKEN}" ]]; then
+          echo "You must include the GITHUB_TOKEN as an environment variable."
+          exit 1
+        fi
+
         # git config for merge commits
         git config --global user.email "foo@bar.com"
         git config --global user.name "foo bar"
