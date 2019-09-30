@@ -70,7 +70,7 @@ jobs:
         git remote prune origin
 
         function open_and_merge_pull_request() {
-          echo "making pull request from ${GITHUB_REF} to $1"
+          echo "DEBUG: making pull request from ${GITHUB_REF} to $1"
           # create PR, record PR url in $PR_URL
           PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
           if [ -z "$PR_URL"  ]; then
@@ -82,7 +82,7 @@ jobs:
               git checkout "${1}" && \
               git reset --hard origin/"${1}"
             hub merge ${PR_URL}
-            git push origin ${1}
+            git push origin ${1} && echo "DEBUG: successfully pushed" || echo "DEBUG: push failed"
           fi
         }
 
