@@ -83,6 +83,7 @@ jobs:
               git reset --hard origin/"${1}"
             hub merge ${PR_URL}
             git push origin ${1} && echo "DEBUG: successfully pushed" || echo "DEBUG: push failed"
+            echo $?
           fi
         }
 
