@@ -8,6 +8,7 @@
 
 - We hardcode Github's SSH pubkeys into our known_hosts for security reasons
     - these are gotten via: `ssh-keyscan github.com`
+- Expects `develop` branch to exist already by convention
 
 #### Creates pull requests as follows:
 

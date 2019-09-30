@@ -1,6 +1,10 @@
 name: merge
-
-on: [push]
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release/*'
+      - 'develop'
 
 jobs:
   build:
@@ -110,16 +114,16 @@ jobs:
           done
         fi
 
+        # if we're on a release branch
+        if [[ "${GITHUB_REF}" =~ refs/heads/release\/.* ]]; then
+          # create PR from release => develop
+          open_and_merge_pull_request develop;
+        fi
+
         # if we're on develop
         if [ "${GITHUB_REF}" == "refs/heads/develop" ]; then
           # create PR from develop => sprint branches
           for branch in $(git branch -r | grep -o 'sprint/.*'); do
             open_and_merge_pull_request "${branch}";
           done
-        fi
-
-        # if we're on a release branch
-        if [[ "${GITHUB_REF}" =~ refs/heads/release\/.* ]]; then
-          # create PR from release => develop
-          open_and_merge_pull_request develop;
         fi
