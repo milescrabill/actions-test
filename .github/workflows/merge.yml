@@ -83,13 +83,13 @@ jobs:
             exit 1
           fi
 
-          # create PR, record PR url in $PR_URL
-          PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
-          if [ -z "$PR_URL"  ]; then
-            echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
-          else
-            # subshell ignores -e so we keep going on errors
-            (
+          # subshell ignores -e so we keep going on errors
+          (
+            # create PR, record PR url in $PR_URL
+            PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
+            if [ -z "$PR_URL"  ]; then
+              echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
+            else
               # checkout destination branch,
               # merge PR and push merge commit
               git fetch origin "${1}" && \
@@ -99,8 +99,8 @@ jobs:
               git push origin ${1} && \
                 echo "DEBUG: successfully pushed ${GITHUB_REF} merged into $1" || \
                 echo "DEBUG: pushing ${GITHUB_REF} merged into $1 failed"
-            )
-          fi
+            fi
+          )
         }
 
         # if we're on master
