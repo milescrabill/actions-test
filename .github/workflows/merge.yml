@@ -87,17 +87,19 @@ jobs:
           PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
           if [ -z "$PR_URL"  ]; then
             echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
-            exit 1
           else
-            # checkout destination branch,
-            # merge PR and push merge commit
-            git fetch origin "${1}" && \
-              git checkout "${1}" && \
-              git reset --hard origin/"${1}"
-            hub merge ${PR_URL}
-            git push origin ${1} && \
-              echo "DEBUG: successfully pushed ${GITHUB_REF} merged into $1" || \
-              echo "DEBUG: pushing ${GITHUB_REF} merged into $1 failed"
+            # subshell ignores -e so we keep going on errors
+            (
+              # checkout destination branch,
+              # merge PR and push merge commit
+              git fetch origin "${1}" && \
+                git checkout "${1}" && \
+                git reset --hard origin/"${1}"
+              hub merge ${PR_URL}
+              git push origin ${1} && \
+                echo "DEBUG: successfully pushed ${GITHUB_REF} merged into $1" || \
+                echo "DEBUG: pushing ${GITHUB_REF} merged into $1 failed"
+            )
           fi
         }
 
