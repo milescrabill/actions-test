@@ -78,9 +78,8 @@ jobs:
           echo "DEBUG: making pull request from ${GITHUB_REF} to $1"
 
           # if $1 branch does not exist origin
-          if [ -z $(git ls-remote origin "$1") ]; then
+          if [[ -z "$(git ls-remote origin $1)" ]]; then
             echo "Could not find expected branch '$1' on remote 'origin'"
-            exit 1
           fi
 
           # subshell with +e so we continue on errors
@@ -88,7 +87,7 @@ jobs:
             set +e
             # create PR, record PR url in $PR_URL
             PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
-            if [ -z "$PR_URL"  ]; then
+            if [[ -z "$PR_URL" ]]; then
               echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
             else
               # checkout destination branch,
