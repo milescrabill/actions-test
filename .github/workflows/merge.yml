@@ -85,8 +85,14 @@ jobs:
           # subshell with +e so we continue on errors
           (
             set +e
-            # create PR, record PR url in $PR_URL
-            PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
+
+            # check for existing PRs
+            PR_URL="$(hub pr list -b $1 -h ${GITHUB_REF} -s open -f '%U')"
+            if [[ -z "$PR_URL" ]]; then
+              # PR did not exist, create it
+              PR_URL="$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')"
+            fi
+
             if [[ -z "$PR_URL" ]]; then
               echo "Failed to get PR URL for merge of ${GITHUB_REF} into $1"
             else
@@ -95,7 +101,9 @@ jobs:
               git fetch origin "${1}" && \
                 git checkout "${1}" && \
                 git reset --hard origin/"${1}"
-              hub merge ${PR_URL}
+              # create merge commit
+              hub merge "${PR_URL}"
+              # pushes merge commit
               git push origin ${1} && \
                 echo "DEBUG: successfully pushed ${GITHUB_REF} merged into $1" || \
                 echo "DEBUG: pushing ${GITHUB_REF} merged into $1 failed"
