@@ -83,8 +83,9 @@ jobs:
             exit 1
           fi
 
-          # subshell ignores -e so we keep going on errors
+          # subshell with +e so we keep going on errors
           (
+            set +e
             # create PR, record PR url in $PR_URL
             PR_URL=$(hub pull-request -b $1 -h ${GITHUB_REF} -m 'Automated Merge')
             if [ -z "$PR_URL"  ]; then
